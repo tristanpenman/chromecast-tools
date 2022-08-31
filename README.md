@@ -12,7 +12,7 @@ This code may brick your Chromecast. **Use at your own risk.**
 
 This repo provide headers for private, otherwise undocumented API exposed by libraries on the Chromecast. Using these headers, tools can be built to interact with these libraries.
 
-**bin/gtv_ca_sign**
+**bin/gtv-ca-sign**
 
 This tool will print a valid signature for a given SHA1. The signature is produced using the private key of the provided keystore, or `/factory/client.key.bin` by default.
 
@@ -31,6 +31,16 @@ When the extension connects to a Chromecast, the connection is protected by TLS,
 The client certificate for a chromecast is stored in `/factory/client.crt` on the chromecast itself, unfortunately the private key is encrypted, hence why we need to run `gtv_ca_sign` on the chromecast itself. The chrome extension's trust anchor is a "ICA Certificate" whose public key hardcoded in the cast_v2 protocol implementation (linked in the above paragraph).
 
 For a successful device authentication to be performed, the extension will first check that the device's "client certificate" was signed by the "ICA Certificate". Then it checks that the signature provided in the device auth response is a valid signature over the DER-encoded form of the self-signed certificate.
+
+## Build
+
+Before you can use `bin/gtv-ca-sign` you'll need to compile it from source. This can be done on most typical x86-64 Linux systems, if you have the base development tools packages.
+
+You'll also need to extract the Chromecast toolchain in the [toolchain](./toolchain) directory. After extracting [toolchain/arm-unknown-linux-gnueabi-4.5.3-glibc.tar.xz](./toolchain/arm-unknown-linux-gnueabi-4.5.3-glibc.tar.xz) you should have a directory called `toolchain/arm-unknown-linux-gnueabi-4.5.3-glibc`.
+
+Then you can run `make` to compile `bin/gta-ca-sign`.
+
+Alternatively, you can use a Docker image, as described below.
 
 ## Dockerfile
 
