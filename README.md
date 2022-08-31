@@ -14,7 +14,7 @@ This repo provide headers for private, otherwise undocumented API exposed by lib
 
 **bin/gtv_ca_sign**
 
-This tool will print a valid signature for a given sha1. The signature is produced using the private key of the provided keystore, or `/factory/client.key.bin` by default.
+This tool will print a valid signature for a given SHA1. The signature is produced using the private key of the provided keystore, or `/factory/client.key.bin` by default.
 
 This signature is required if someone wanted to interact with the Google Chrome extension by impersonating a Chromecast, for instance using [Leapcast](https://github.com/EiNSTeiN-/leapcast) or [GoCast](https://github.com/tristanpenman/go-cast).
 
@@ -31,6 +31,20 @@ When the extension connects to a Chromecast, the connection is protected by TLS,
 The client certificate for a chromecast is stored in `/factory/client.crt` on the chromecast itself, unfortunately the private key is encrypted, hence why we need to run `gtv_ca_sign` on the chromecast itself. The chrome extension's trust anchor is a "ICA Certificate" whose public key hardcoded in the cast_v2 protocol implementation (linked in the above paragraph).
 
 For a successful device authentication to be performed, the extension will first check that the device's "client certificate" was signed by the "ICA Certificate". Then it checks that the signature provided in the device auth response is a valid signature over the DER-encoded form of the self-signed certificate.
+
+## Dockerfile
+
+A Dockerfile has been included for building on platforms other than Linux.
+
+You can build the Docker image like so:
+
+    docker build . -t chromecast-tools
+
+You can then run `bash` inside a container based on the `chromecast-tools` image:
+
+    docker run -v `pwd`:/workspace --rm -it chromecast-tools /bin/bash
+
+From there, you can run `make`, to build `bin/gtv-ca-sign`. This is the binary that you will want to run on your rooted Chromecast.
 
 ## Getting Root Access
 
