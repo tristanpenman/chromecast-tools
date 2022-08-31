@@ -1,4 +1,6 @@
+#include <stdio.h>
 #include <string.h>
+
 #include "GtvCa/gtv_ca.h"
 
 int gtv_ca_load_key_advance(struct OpenCrypto_Key **p_key, char *store, int store_size, int a4, int a5)
@@ -7,7 +9,6 @@ int gtv_ca_load_key_advance(struct OpenCrypto_Key **p_key, char *store, int stor
     *p_key, store, store_size, a4, a5);
   return 0;
 }
-
 
 int gtv_ca_sign_crt(struct OpenCrypto_Key *p_key, char *input, size_t insize, int a4,
                                                   char *output, size_t *outsize, int a7)

@@ -8,29 +8,29 @@
 
 #define DEFAULT_KEYSTORE_FILENAME "/factory/client.key.bin"
 
-int read_file(const char *filename, char **data, unsigned int *length)
-{
+int read_file(const char *filename, char **data, unsigned int *length) {
   FILE *fd;
 
   fd = fopen(filename, "rb");
-  if(!fd)
+  if (!fd) {
     return -1;
+  }
 
   fseek(fd, 0, SEEK_END);
   *length = ftell(fd);
-  if(*length == 0) {
+  if (*length == 0) {
     fclose(fd);
     return -1;
   }
 
   *data = (char *)malloc(*length);
-  if(*data == NULL) {
+  if (*data == NULL) {
     fclose(fd);
     return -1;
   }
 
   rewind(fd);
-  if(fread(*data, 1, *length, fd) != *length) {
+  if (fread(*data, 1, *length, fd) != *length) {
     fclose(fd);
     return -1;
   }
@@ -39,11 +39,10 @@ int read_file(const char *filename, char **data, unsigned int *length)
   return 0;
 }
 
-void from_hex(const char *src, int len, char *dest)
-{
+void from_hex(const char *src, int len, char *dest) {
   int n;
-  char s[3] = {0,0,0};
-  for ( int j=0; j<len; j += 2 ) {
+  char s[3] = {0, 0, 0};
+  for (int j = 0; j < len; j += 2) {
     strncpy(s, src, 2);
     sscanf(s, "%x", &n);
     src += 2;
@@ -51,9 +50,7 @@ void from_hex(const char *src, int len, char *dest)
   }
 }
 
-
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   struct OpenCrypto_Key *key = NULL;
   const char *keystore_filename = NULL;
   unsigned int keystore_length = 0, keystore_length_ = 0;
@@ -63,22 +60,22 @@ int main(int argc, char *argv[])
 
   int hash_type = -1;
   char *hash = NULL;
-  unsigned int hash_length = 0;
+  int hash_length = 0;
   char *sig = NULL;
-  unsigned int sig_length = 0;
+  size_t sig_length = 0;
 
-  if((err = MV_OSAL_Init()) != 0) {
+  if ((err = MV_OSAL_Init()) != 0) {
     fprintf(stderr, "MV_OSAL_Init: failed %u\n", err);
     return -1;
   }
 
   // Parse command line arguments
-  for(i=1;i<argc;i++) {
-    if(!strcasecmp(argv[i], "--keystore") && i+1 < argc) {
+  for (i=1;i<argc;i++) {
+    if (!strcasecmp(argv[i], "--keystore") && i + 1 < argc) {
       keystore_filename = argv[i+1];
       i++;
     }
-    else if(!strcasecmp(argv[i], "--sha1") && i+1 < argc) {
+    else if (!strcasecmp(argv[i], "--hash") && i + 1 < argc) {
       hash_type = 0;
       hash_length = strlen(argv[i+1]) / 2;
       hash = (char *)malloc(hash_length);
@@ -88,17 +85,12 @@ int main(int argc, char *argv[])
   }
 
   // Set some defaults
-  if(!keystore_filename) {
+  if (!keystore_filename) {
     keystore_filename = DEFAULT_KEYSTORE_FILENAME;
-    printf("Using default keystore: %s\n", keystore_filename);
+    fprintf(stderr, "Using default keystore: %s\n", keystore_filename);
   }
 
-  if(hash_type == -1 || hash_length != 20) {
-    fprintf(stderr, "please specify --sha1 <hash> with 20 hex-encoded bytes.\n");
-    return -1;
-  }
-
-  if(read_file(keystore_filename, &keystore, &keystore_length) != 0) {
+  if (read_file(keystore_filename, &keystore, &keystore_length) != 0) {
     fprintf(stderr, "read file: unable to load keystore %s\n", keystore_filename);
     return -1;
   }
@@ -107,42 +99,45 @@ int main(int argc, char *argv[])
   keystore_length_ += 15;
   keystore_length_ &= 0xFFFFFFF0;
   keystore_length_ += 128;
-  printf("using keystore_bits=%u, should match filesize=%u\n", keystore_length_, keystore_length);
+  fprintf(stderr, "using keystore_bits=%u, should match filesize=%u\n", keystore_length_, keystore_length);
 
-  if((err = gtv_ca_load_key_advance(&key, keystore, keystore_length_, 4, 2)) != 0) {
+  if ((err = gtv_ca_load_key_advance(&key, keystore, keystore_length_, 4, 2)) != 0) {
     fprintf(stderr, "gtv_ca_load_key_advance: failed %u\n", err);
     return -1;
   }
 
   sig_length = 256;
   sig = (char *)malloc(sig_length);
-  if(!sig) {
+  if (!sig) {
     fprintf(stderr, "malloc: failed to allocate %u\n", sig_length);
     return -1;
   }
   memset(sig, 0, sig_length);
 
-  printf("trying gtv_ca_sign_crt with type=%u\n", hash_type);
-  printf("hash=");
-  for(i=0;i<hash_length;i++)
-    printf("%02x", hash[i]);
-  printf("\n");
-
-  if((err = gtv_ca_sign_crt(key, hash, hash_length, hash_type, sig, &sig_length, 1)) != 0) {
-    fprintf(stderr, "gtv_ca_sign_crt: failed %u\n", err);
+  fprintf(stderr, "hash=");
+  for (i = 0; i < hash_length; i++) {
+    fprintf(stderr, "%02x", hash[i]);
   }
-  else {
-    printf("sig output length = %u\n", sig_length);
-    printf("sig=");
-    for(i=0;i<sig_length;i++)
-      printf("%02x", sig[i]);
-    printf("\n");
+  fprintf(stderr, "\n");
+
+  for (int q = 0; q < 100; q++) {
+    fprintf(stderr, "trying gtv_ca_sign_crt with type=%u\n", q);
+    if ((err = gtv_ca_sign_crt(key, hash, hash_length, q, sig, &sig_length, 1)) != 0) {
+      fprintf(stderr, "gtv_ca_sign_crt: failed %u\n", err);
+    } else {
+      fprintf(stderr, "sig output length = %u\n", sig_length);
+      break;
+    }
+  }
+
+  for (i = 0; i < (ssize_t)sig_length; i++) {
+    printf("%02x", sig[i]);
   }
 
   free(sig);
   sig = NULL;
 
-  if((err = gtv_ca_unload_key(&key)) != 0) {
+  if ((err = gtv_ca_unload_key(&key)) != 0) {
     fprintf(stderr, "gtv_ca_unload_key: failed %u\n", err);
     return -1;
   }

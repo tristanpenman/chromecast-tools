@@ -56,4 +56,3 @@ int gtv_ca_decrypt(int a1, int a2, int a3, int a4, int a5);
 #ifdef __cplusplus
 }
 #endif
-

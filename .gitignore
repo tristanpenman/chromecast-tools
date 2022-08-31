@@ -15,15 +15,5 @@
 *.a
 *.lib
 
-# Executables
-*.exe
-*.out
-*.app
-
-chromium/
-third_party/
-chromecast_*_content_shell.tgz
 bin/
-lxc/
-staging/
 toolchain/

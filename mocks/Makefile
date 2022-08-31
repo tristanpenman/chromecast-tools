@@ -1,12 +1,3 @@
-
-PE_AGENT_LIB=libPEAgent.so
-PE_AGENT_OBJ=\
-	PEAgent/oecc.o
-
-SHM_LIB=libshm.so
-SHM_OBJ=\
-	shm/shm.o
-
 OPENCRYPTO_LIB=libOpenCrypto.so
 OPENCRYPTO_OBJ=\
 	OpenCrypto/open_crypto.o
@@ -19,15 +10,7 @@ OSAL_LIB=libOSAL.so
 OSAL_OBJ=\
 	OSAL/osal.o
 
-all: $(PE_AGENT_LIB) $(SHM_LIB) $(GTVCA_LIB) $(OPENCRYPTO_LIB) $(OSAL_LIB)
-
-$(PE_AGENT_LIB): $(PE_AGENT_OBJ)
-	$(CC) -DDLLEXPORTS $(CFLAGS) -shared -Wl,-soname,$(PE_AGENT_LIB) \
-		-o $(PE_AGENT_LIB) $(PE_AGENT_OBJ)
-
-$(SHM_LIB): $(SHM_OBJ)
-	$(CC) -DDLLEXPORTS $(CFLAGS) -shared -Wl,-soname,$(SHM_LIB) \
-		-o $(SHM_LIB) $(SHM_OBJ)
+all: $(GTVCA_LIB) $(OPENCRYPTO_LIB) $(OSAL_LIB)
 
 $(OPENCRYPTO_LIB): $(OPENCRYPTO_OBJ)
 	$(CC) -DDLLEXPORTS -DC_EXPORTS $(CFLAGS) -shared -Wl,-soname,$(OPENCRYPTO_LIB) \
@@ -42,5 +25,5 @@ $(OSAL_LIB): $(OSAL_OBJ)
 		-o $(OSAL_LIB) $(OSAL_OBJ)
 
 clean:
-	rm -rf $(SHM_OBJ) $(PE_AGENT_OBJ) $(GTVCA_OBJ) $(OPENCRYPTO_OBJ)
+	rm -rf $(GTVCA_OBJ) $(OPENCRYPTO_OBJ)
 	rm *.so
