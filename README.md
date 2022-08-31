@@ -2,7 +2,7 @@
 
 Some experimental tools that are meant to run on a rooted Chromecast in order to provision and sign device certificates.
 
-This is a stripped down version of the code that can be found in [chromecast-widevine-tools](chromecast-widevine-tools), retaining just the code that is necessary to interact with libGtvCa, which allows us to provision and sign device certificates.
+This is a stripped down version of the code that can be found in [chromecast-widevine-tools](https://github.com/EiNSTeiN-/chromecast-widevine-tools), retaining just the code that is necessary to interact with libGtvCa, which allows us to provision and sign device certificates.
 
 ## Disclaimer
 
