@@ -16,4 +16,6 @@
 *.lib
 
 bin/
+etc/cpu.crt
+tmp/*
 toolchain/arm-unknown-linux-gnueabi-4.5.3-glibc
