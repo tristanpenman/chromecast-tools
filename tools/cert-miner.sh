@@ -6,19 +6,18 @@ usage() {
   echo "Mine the certz"
   echo ""
   echo "Usage:"
-  echo "  $0 <device-ip> <target-dir> [offset=0] [count=1]"
+  echo "  $0 <device-ip> [offset=0] [count=1]"
   echo ""
 }
 
-if [[ $# -lt 2 ]]; then
+if [[ $# -lt 1 ]]; then
   usage
   exit 1
 fi
 
 device=$1
-target=$2
-begin=${3:-0}
-count=${4:-1}
+begin=${2:-0}
+count=${3:-1}
 end=$(expr ${begin} + ${count})
 
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -63,7 +62,7 @@ for i in $(seq ${begin} $(expr ${end} - 1)); do
     timestamp=$(date -d "${not_before:10}" +%Y%m%d)
   fi
 
-  echo "make ${target}/certs-${timestamp}.json"
+  echo "make tmp/certs-${timestamp}.json"
 
-  printf '{"pr":"%s","pu":"%s","cpu":"%s","sig":"%s","ica":"%s"}' "${peer_key}" "${peer_crt}" "${cpu_crt}" "${base64}" "${ica_crt}" > ${target}/certs-${timestamp}.json
+  printf '{"pr":"%s","pu":"%s","cpu":"%s","sig":"%s","ica":"%s"}' "${peer_key}" "${peer_crt}" "${cpu_crt}" "${base64}" "${ica_crt}" > tmp/certs-${timestamp}.json
 done
