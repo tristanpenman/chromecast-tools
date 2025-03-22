@@ -22,7 +22,7 @@ target = sys.argv[1]
 
 cert = crypto.X509()
 cert.get_subject().CN = 'GoCast'
-cert.set_serial_number(001891360103749373019587830806931297564229337938)
+cert.set_serial_number(1891360103749373019587830806931297564229337938)
 
 # Set the validity period
 cert.set_notBefore(get_timestamp(offset))
